@@ -33,9 +33,12 @@ io.on("connection", (client) => {
 
   client.on("newUser", async (user) => {
     const { isValid, errMsg } = await checkNewUserDataValidity(user);
+    console.log(isValid);
 
     if (!isValid) {
-      io.emit("authError", errMsg);
+      client.emit("authError", errMsg);
+      console.log("emitted");
+      console.log(errMsg);
     } else {
       addUser(user, client);
       io.emit("newUserAdded");
@@ -45,8 +48,7 @@ io.on("connection", (client) => {
 
   client.on("disconnect", (reason) => {
     console.log("Disconnecting... Reason: ", reason);
-  })
+  });
 });
-
 
 httpServer.listen(3000);
