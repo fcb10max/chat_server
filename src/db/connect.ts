@@ -1,9 +1,10 @@
-import sqlite3 from "sqlite3";
+import knexLib from "knex";
 
-export default new sqlite3.Database(
-  "./sqlite.db",
-  sqlite3.OPEN_READWRITE,
-  (err) => {
-    if (err) return console.error(err);
-  }
-);
+const knex = knexLib({
+  client: "sqlite3",
+  connection: {
+    filename: "./sqlite.db",
+  },
+});
+
+export default knex;

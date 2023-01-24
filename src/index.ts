@@ -14,6 +14,8 @@ import { createServer } from "http";
 import checkNewUserDataValidity from "./helpers/checkNewUserValidity";
 import addUser from "./db/addUser";
 
+import knexLib from "knex";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -30,9 +32,9 @@ const io = new Server<
 io.on("connection", (client) => {
   console.log("connected");
 
+
   client.on("newUser", async (user) => {
     const { isValid, errMsg } = await checkNewUserDataValidity(user);
-    console.log(isValid);
 
     if (!isValid) {
       client.emit("authError", errMsg);

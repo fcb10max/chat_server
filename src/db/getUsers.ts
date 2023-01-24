@@ -1,25 +1,19 @@
-import { User } from "../dataTypes/user";
-import db from "./connect";
+import { IUser } from "../dataTypes/user";
+import knex from "./connect";
 
-interface IDBUser extends User {
-  id: number
+interface IGetUser {
+  id?: number;
+  email?: string;
+  username?: string;
 }
-const data: IDBUser[] = [];
 
-export default function (sqlQuery?: string) {
-  const sql = `SELECT * FROM users;`;
-
-  console.log("getUsers query: ", sqlQuery ?? sql);
-
-  return new Promise<IDBUser[]>((resolve, reject) => {
-    db.all(sqlQuery ?? sql, [], (err, rows) => {
-      if (err) {
-        return console.error("get users error: ", err.message);
-      }
-      rows.forEach((row) => {
-        data.push(row);
-      });
-      resolve(data);
-    });
-  });
-}
+export default async ({ id, email, username }: IGetUser) => {
+  const getUsers = async (): Promise<IUser[]> => {
+    return await knex("users")
+      .select("*")
+      .where("id", id ?? "")
+      .orWhere("email", email ?? "")
+      .orWhere("username", username ?? "");
+  };
+  return await getUsers();
+};

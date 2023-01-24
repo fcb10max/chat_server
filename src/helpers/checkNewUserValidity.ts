@@ -1,7 +1,7 @@
-import { User } from "../dataTypes/user";
+import { IUser } from "../dataTypes/user";
 // import checkForDuplicate from "../db/checkForDuplicate";
 
-export default async (user: User) => {
+export default async (user: IUser) => {
   const { username, email } = user;
   let isValid = false;
   let errMsg = "";
