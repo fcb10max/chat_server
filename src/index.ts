@@ -1,11 +1,10 @@
 // require("dotenv").config();
 
-import { Socket, Server } from "socket.io";
+import { Server } from "socket.io";
 import {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
-  SocketClientType,
   SocketData,
 } from "./dataTypes/socket-io-types";
 // const supabase = require("@supabase/supabase-js")

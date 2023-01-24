@@ -22,14 +22,6 @@ export default async (user: User) => {
       "On username allowed only alpha-numeric, dot, hyphen and underscore";
     return { isValid, errMsg };
   }
-
-  // const isDuplicate = checkForDuplicate(username, email);
-  // if (isDuplicate) {
-  //   isValid = false;
-  //   errMsg = `Entered username or email already exists`;
-  //   return { isValid, errMsg };
-  // }
-
   isValid = true;
   errMsg = "";
   return { isValid, errMsg };
