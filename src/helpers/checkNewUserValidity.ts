@@ -1,9 +1,9 @@
 import { IUser } from "../dataTypes/user";
-// import checkForDuplicate from "../db/checkForDuplicate";
+import getUsers from "../db/getUsers";
 
 export default async (user: IUser) => {
   const { username, email } = user;
-  let isValid = false;
+  let isValid = true;
   let errMsg = "";
 
   const emailPattern =
@@ -11,18 +11,22 @@ export default async (user: IUser) => {
   const usernamePattern = /[A-Za-z0-9-_.]+/;
 
   if (!emailPattern.test(email)) {
-    isValid = false;
     errMsg = "Invalid email address";
-    return { isValid, errMsg };
-  }
-
-  if (!usernamePattern.test(username)) {
-    isValid = false;
+  } else if (!usernamePattern.test(username)) {
     errMsg =
       "On username allowed only alpha-numeric, dot, hyphen and underscore";
-    return { isValid, errMsg };
+  } else {
+    try {
+      const user = (await getUsers({ username, email }))[0];
+      if (user) {
+        errMsg = "Entered username or email already exists!";
+      }
+    } catch (error) {
+      errMsg = "Something went wrong while checking new account";
+    }
   }
-  isValid = true;
-  errMsg = "";
+
+  if (!!errMsg) isValid = false;
+
   return { isValid, errMsg };
 };

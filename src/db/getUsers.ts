@@ -15,5 +15,6 @@ export default async ({ id, email, username }: IGetUser) => {
       .orWhere("email", email ?? "")
       .orWhere("username", username ?? "");
   };
-  return await getUsers();
+  const users = await getUsers()
+  return users;
 };

@@ -1,16 +1,20 @@
 import knex from "./connect";
 import bcrypt from "bcrypt";
 import { INewUser, IUser } from "../dataTypes/user";
-import { SocketClientType } from "../dataTypes/socket-io-types";
-import getUsers from "./getUsers";
 
-export default async (user: INewUser, socket: SocketClientType) => {
+interface IResult {
+  error: boolean;
+  id: any;
+  errMsg: string;
+}
+
+export default async (user: INewUser) => {
   const { username, email, password } = user;
-  const users = await getUsers({ username, email });
-
-  if (!!users.length) {
-    return socket.emit("authError", "Entered email or username already exists");
-  }
+  const result: IResult = {
+    error: false,
+    id: "",
+    errMsg: "",
+  };
 
   try {
     const hashPassword = async (password: string) => {
@@ -19,16 +23,24 @@ export default async (user: INewUser, socket: SocketClientType) => {
       return hP;
     };
     const hashedPassword = await hashPassword(password);
-    await knex<IUser>("users").insert({
-      email,
-      username,
-      password: hashedPassword,
-    });
+    const ids = await knex<IUser>("users")
+      .insert({
+        email,
+        username,
+        password: hashedPassword,
+      })
+      .returning("id");
+    if (!ids.length) {
+      result.error = true;
+      result.errMsg = `Could not return id of new user: ${username}`;
+      return result;
+    }
+    result.id = ids[0].id;
   } catch (error) {
     console.log(error);
-    socket.emit(
-      "authError",
-      "something went wrond during account creation process"
-    );
+    result.error = true;
+    result.errMsg = "Something went wrong when adding new user to DB";
+    return result;
   }
+  return result;
 };
