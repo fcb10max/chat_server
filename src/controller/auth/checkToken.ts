@@ -17,11 +17,20 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
-  const { user_id } = jwt.verify(
-    token,
-    process.env.JWT_SECRET_KEY!
-  ) as JwtPayload;
-  const { id, username } = (await getUsers({ id: user_id }))[0];
+  try {
+    const { user_id } = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY!
+    ) as JwtPayload;
+    const { id, username } = (await getUsers({ id: user_id }))[0];
 
-  res.json({ success: true, user: { id, username } });
+    res.json({ success: true, user: { id, username } });
+  } catch (error) {
+    console.log(error);
+
+    res.json({
+      success: false,
+      errMsg: "Something went wron during token verification",
+    });
+  }
 };
