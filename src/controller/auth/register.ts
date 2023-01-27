@@ -17,7 +17,7 @@ export default async (req: Request, res: Response) => {
 
   const result = await addUser(user);
   if (result.error) {
-    res.json({ success: false, errMsg: result.errMsg });
+    res.status(520).json({ success: false, errMsg: result.errMsg });
     return;
   }
 
@@ -29,5 +29,5 @@ export default async (req: Request, res: Response) => {
     maxAge: 1000 * 60 * 60 * 3,
     httpOnly: true,
   });
-  res.json({ success: true });
+  res.status(200).json({ success: true });
 };

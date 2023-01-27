@@ -10,9 +10,9 @@ export default async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = (await getUsers({ username }))[0];
   if (!user) {
-    console.log("dont exist");
-
-    res.json({ success: false, msg: "Entered username does not exist" });
+    res
+      .status(400)
+      .json({ success: false, msg: "Entered username does not exist" });
     return;
   }
 
@@ -20,8 +20,7 @@ export default async (req: Request, res: Response) => {
   console.log(isPassCorrect);
 
   if (!isPassCorrect) {
-    console.log("inv pass");
-    res.json({ success: false, msg: "Invalid password" });
+    res.status(401).json({ success: false, msg: "Invalid password" });
     return;
   }
 
@@ -33,7 +32,7 @@ export default async (req: Request, res: Response) => {
     maxAge: 1000 * 60 * 60 * 3,
     httpOnly: true,
   });
-  res.json({ success: true });
+  res.status(200).json({ success: true });
 
   console.log("success");
 };

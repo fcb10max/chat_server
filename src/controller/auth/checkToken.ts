@@ -13,7 +13,7 @@ export default async (req: Request, res: Response) => {
   const token: string = req.cookies.jwt;
 
   if (!token) {
-    res.json({ success: false, errMsg: "Token not found" });
+    res.status(400).json({ success: false, msg: "Token not found" });
     return;
   }
 
@@ -24,13 +24,13 @@ export default async (req: Request, res: Response) => {
     ) as JwtPayload;
     const { id, username } = (await getUsers({ id: user_id }))[0];
 
-    res.json({ success: true, user: { id, username } });
+    res.status(200).json({ success: true, user: { id, username } });
   } catch (error) {
     console.log(error);
 
-    res.json({
+    res.status(520).json({
       success: false,
-      errMsg: "Something went wron during token verification",
+      msg: "Something went wron during token verification",
     });
   }
 };
