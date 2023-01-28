@@ -8,7 +8,9 @@ export default async (user: IUser) => {
 
   const emailPattern =
     /^[^0-9][a-z0-9._-]+\@{1}[^0-9]{1}[a-z-0-9]+(?:\.[a-zA-Z]+)*$/;
-  const usernamePattern = /[A-Za-z0-9-_.]+/;
+  const usernamePattern = /^[A-Za-z0-9-_.]*$/;
+
+  console.log("username pattern: ", !usernamePattern.test(username));
 
   if (!emailPattern.test(email)) {
     errMsg = "Invalid email address";
@@ -22,6 +24,8 @@ export default async (user: IUser) => {
         errMsg = "Entered username or email already exists!";
       }
     } catch (error) {
+      console.log(error);
+
       errMsg = "Something went wrong while checking new account";
     }
   }
