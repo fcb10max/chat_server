@@ -10,7 +10,6 @@ dotenv.config();
 export default async (req: Request, res: Response) => {
   const user: IUser = req.body;
   const { isValid, errMsg } = await checkNewUserValidity(user);
-  console.log("isvalid: ", isValid, "errMsg: ", errMsg);
   
   if (!isValid) {
     res.status(406).json({ success: false, msg: errMsg });
