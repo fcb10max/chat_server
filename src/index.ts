@@ -3,14 +3,16 @@ import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
+import cookieParser from "cookie-parser";
 import {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
+  SocketType,
   SocketData,
 } from "./dataTypes/socket-io-types";
-import cookieParser from "cookie-parser";
 import router from "./router";
+import { message } from "./socketEvents";
 
 dotenv.config();
 
@@ -43,13 +45,35 @@ const io = new Server<
   cookie: true,
 });
 
-io.on("connection", (client) => {
-  console.log("connected");
+io.use((socket, next) => {
+  const {username, userID} = socket.handshake.auth;
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
+  socket.username = username;
+  socket.userID = userID;
+  next();
+});
+
+const onConnection = (client: SocketType) => {
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    if (id === client.id) continue;
+    users.push({
+      userID: socket.userID,
+      username: socket.username,
+    });
+  }
+  client.emit("users", users)
+  
+  message(io, client);
 
   client.on("disconnect", (reason) => {
     console.log("Disconnecting... Reason: ", reason);
   });
-});
+};
+
+io.on("connection", onConnection);
 
 app.use("/api", router);
 

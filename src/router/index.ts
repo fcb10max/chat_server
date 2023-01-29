@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/auth/register", register);
 router.post("/auth/login", login);
+router.post("/userSearchSuggestions", userSearchSuggs);
 router.get("/auth/checkToken", checkToken);
-router.get("/userSearchSuggestions", userSearchSuggs);
 
 export default router;

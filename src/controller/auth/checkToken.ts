@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import getUsers from "../../db/getUsers";
+import getUsers from "../../db/users/getUsers";
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ export default async (req: Request, res: Response) => {
     ) as JwtPayload;
     const { id, username } = (await getUsers({ id: user_id }))[0];
 
-    res.status(200).json({ success: true, user: { id, username } });
+    res.status(200).json({ success: true, user: { userID: id, username } });
   } catch (error) {
     console.log(error);
 

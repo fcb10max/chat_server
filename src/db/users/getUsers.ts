@@ -1,5 +1,5 @@
-import { IUser } from "../dataTypes/user";
-import knex from "./connect";
+import { IUser } from "../../dataTypes/user";
+import knex from "../connect";
 
 interface IGetUser {
   id?: number;

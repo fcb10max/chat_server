@@ -1,5 +1,5 @@
 import { IUser } from "../dataTypes/user";
-import getUsers from "../db/getUsers";
+import getUsers from "../db/users/getUsers";
 
 export default async (user: IUser) => {
   const { username, email } = user;

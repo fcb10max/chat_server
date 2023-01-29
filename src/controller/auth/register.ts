@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUser } from "../../dataTypes/user";
-import addUser from "../../db/addUser";
+import addUser from "../../db/users/addUser";
 import checkNewUserValidity from "../../helpers/checkNewUserValidity";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -23,11 +23,11 @@ export default async (req: Request, res: Response) => {
   }
 
   const genToken = (id: any) =>
-    jwt.sign(id, process.env.JWT_SECRET_KEY!, { expiresIn: "1h" });
+    jwt.sign(id, process.env.JWT_SECRET_KEY!, { expiresIn: "12h" });
   const token = genToken({ user_id: result.id });
 
   res.cookie("jwt", token, {
-    maxAge: 1000 * 60 * 60 * 3,
+    maxAge: 1000 * 60 * 60 * 12,
     httpOnly: true,
   });
   res.status(200).json({ success: true });

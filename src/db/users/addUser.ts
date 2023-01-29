@@ -1,6 +1,6 @@
-import knex from "./connect";
+import knex from "../connect";
 import bcrypt from "bcrypt";
-import { INewUser, IUser } from "../dataTypes/user";
+import { INewUser, IUser } from "../../dataTypes/user";
 
 interface IResult {
   error: boolean;
