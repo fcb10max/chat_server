@@ -17,7 +17,6 @@ export default async (req: Request, res: Response) => {
   }
 
   const isPassCorrect = await bcrypt.compare(password, user.password);
-  console.log(isPassCorrect);
 
   if (!isPassCorrect) {
     res.status(401).json({ success: false, msg: "Invalid password" });

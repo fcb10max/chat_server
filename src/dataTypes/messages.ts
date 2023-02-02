@@ -1,10 +1,17 @@
-export interface IMessage {
-  from: number,
-  to: number,
-  created: number,
-  content: string,
-}
+import { IUser } from "./user";
 
-export interface IMessageWithID extends IMessage {
-  message_id: number
+export interface IMessage {
+  message_id: number;
+  from: number;
+  to: number;
+  created: number;
+  content: string;
+  isArchived: boolean;
+}
+export type IMessageClient = Omit<IMessage, "isArchived">;
+export type INewMessage = Omit<IMessage, "message_id">;
+
+export interface IConversation {
+  user: Omit<IUser, "password" | "email">;
+  lastMsg: IMessageClient;
 }

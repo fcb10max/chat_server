@@ -1,8 +1,7 @@
 import knex from "../connect";
-import { IMessage } from "../../dataTypes/messages";
+import { INewMessage } from "../../dataTypes/messages";
 
-export default async (msg: IMessage) => {
-  console.log(msg);
+export default async (msg: INewMessage) => {
 
   try {
     await knex("messages").insert(msg);

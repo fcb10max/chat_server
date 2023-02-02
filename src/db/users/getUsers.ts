@@ -13,9 +13,9 @@ export default async ({ id, email, username }: IGetUser) => {
       return await knex("users").select("*").limit(5);
     return await knex("users")
       .select("*")
-      .where("id", id ?? "")
-      .orWhere("email", email ?? "")
-      .orWhere("username", username ?? "");
+      .whereLike("id", `%${id}%` ?? "")
+      .orWhereLike("email", `%${email}%` ?? "")
+      .orWhereLike("username", `%${username}%` ?? "");
   };
   const users = await getUsers();
   return users;

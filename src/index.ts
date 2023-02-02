@@ -46,7 +46,7 @@ const io = new Server<
 });
 
 io.use((socket, next) => {
-  const {username, userID} = socket.handshake.auth;
+  const { username, userID } = socket.handshake.auth;
   if (!username) {
     return next(new Error("invalid username"));
   }
@@ -64,8 +64,8 @@ const onConnection = (client: SocketType) => {
       username: socket.username,
     });
   }
-  client.emit("users", users)
-  
+  client.emit("users", users);
+
   message(io, client);
 
   client.on("disconnect", (reason) => {

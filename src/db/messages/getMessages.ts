@@ -1,4 +1,4 @@
-import { IMessage, IMessageWithID } from "../../dataTypes/messages";
+import { IMessage } from "../../dataTypes/messages";
 import knex from "../connect";
 
 interface IGetAllMessages {
@@ -7,12 +7,12 @@ interface IGetAllMessages {
 }
 
 const getAllMessages = async ({ from, to }: IGetAllMessages) => {
-  return await knex<IMessageWithID>("messages")
+  return await knex<IMessage>("messages")
     .select("*")
-    .where("from", from)
-    .orWhere("to", to)
-    .orWhere("from", to)
-    .orWhere("to", from);
+    .where("from", from ?? "")
+    .andWhere("to", to ?? "")
+    .orWhere("from", to ?? "")
+    .andWhere("to", from ?? "");
 };
 
 export default getAllMessages;

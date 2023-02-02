@@ -1,10 +1,15 @@
-import { IMessage } from "../../dataTypes/messages";
+import {
+  IMessage,
+  IMessageClient,
+  INewMessage,
+} from "../../dataTypes/messages";
 import {
   ClientToServerEvents,
   SocketServerType,
   SocketType,
 } from "../../dataTypes/socket-io-types";
 import addNewMessage from "../../db/messages/addNewMessage";
+import getAllConvs from "../../db/messages/getAllConvs";
 import getMessages from "../../db/messages/getMessages";
 
 interface IDirectMessage {
@@ -18,9 +23,10 @@ export const message = (io: SocketServerType, socket: SocketType) => {
     msgParams: IDirectMessage
   ) => {
     const { msg, from, to } = msgParams;
-    const msgObj: IMessage = {
+    const msgObj: INewMessage = {
       content: msg,
       created: Date.now(),
+      isArchived: false,
       from,
       to,
     };
@@ -37,9 +43,19 @@ export const message = (io: SocketServerType, socket: SocketType) => {
     to,
   }) => {
     const messages = await getMessages({ from, to });
-    socket.emit("message:getAll", messages);
+    socket.emit(
+      "message:getAll",
+      messages
+    );
+    
+  };
+  const getConvs: ClientToServerEvents["message:getAllConvs"] = async () => {
+    const userID = socket.userID;
+    const conversations = await getAllConvs(userID);
+    socket.emit("message:getAllConvs", conversations);
   };
 
   socket.on("message:direct", directMessage);
   socket.on("message:getAll", getAllMessages);
+  socket.on("message:getAllConvs", getConvs);
 };
