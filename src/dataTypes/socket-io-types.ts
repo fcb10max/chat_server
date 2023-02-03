@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { IConversation, IMessageClient } from "./messages";
+import { IUser } from "./user";
 
 declare module "socket.io" {
   interface Socket {
@@ -9,24 +10,30 @@ declare module "socket.io" {
 }
 
 export interface ServerToClientEvents {
-  "message:direct": (msgData: {
-    msg: string;
-    from: number;
-    to: number;
-  }) => void;
-  users: (users: { userID: number; username: string }[]) => void;
-  "message:getAll": (messages: IMessageClient[]) => void;
-  "message:getAllConvs": (convs: IConversation[]) => void;
+  "message:direct": (msgData: IMessageClient) => void;
+  // users: (users: { userID: number; username: string }[]) => void;
 }
 
 export interface ClientToServerEvents {
-  "message:direct": (msgParams: {
-    msg: string;
-    from: number;
-    to: number;
-  }) => void;
-  "message:getAll": (users: { from: number; to: number }) => void;
-  "message:getAllConvs": () => void;
+  "message:direct": (
+    msgData: {
+      msg: string;
+      from: number;
+      to: number;
+    },
+    callback: (msg: IMessageClient) => void
+  ) => void;
+  "message:getAll": (
+    users: { from: number; to: number },
+    callback: (res: IMessageClient[]) => void
+  ) => void;
+  "message:getAllConvs": (
+    callback: (conversations: IConversation[]) => void
+  ) => void;
+  "users:getSuggestions": (
+    searchData: { username: string; },
+    callback: (suggs: Omit<IUser, "password"|"email">[]) => void
+  ) => void;
 }
 
 export interface InterServerEvents {}

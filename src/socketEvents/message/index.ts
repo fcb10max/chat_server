@@ -19,8 +19,9 @@ interface IDirectMessage {
 }
 
 export const message = (io: SocketServerType, socket: SocketType) => {
-  const directMessage: ClientToServerEvents["message:direct"] = (
-    msgParams: IDirectMessage
+  const directMessage: ClientToServerEvents["message:direct"] = async (
+    msgParams: IDirectMessage,
+    cb
   ) => {
     const { msg, from, to } = msgParams;
     const msgObj: INewMessage = {
@@ -30,29 +31,39 @@ export const message = (io: SocketServerType, socket: SocketType) => {
       from,
       to,
     };
-    addNewMessage(msgObj);
+    const newMsgID = await addNewMessage(msgObj);
+    // if (newMsgID < 0) // TODO: Error adding message
     const targetUser = Array.from(io.of("/").sockets.values()).find(
       (i) => i.userID === to
     );
     if (targetUser && targetUser.connected)
-      targetUser.emit("message:direct", { msg, from, to });
+      targetUser.emit("message:direct", {
+        content: msgObj.content,
+        created: msgObj.created,
+        from: msgObj.from,
+        to: msgObj.to,
+        message_id: newMsgID,
+      });
+    cb({
+      content: msgObj.content,
+      created: msgObj.created,
+      from: msgObj.from,
+      to: msgObj.to,
+      message_id: newMsgID,
+    });
   };
 
-  const getAllMessages: ClientToServerEvents["message:getAll"] = async ({
-    from,
-    to,
-  }) => {
+  const getAllMessages: ClientToServerEvents["message:getAll"] = async (
+    { from, to },
+    cb
+  ) => {
     const messages = await getMessages({ from, to });
-    socket.emit(
-      "message:getAll",
-      messages
-    );
-    
+    cb(messages.map(({ isArchived, ...others }) => ({ ...others })));
   };
-  const getConvs: ClientToServerEvents["message:getAllConvs"] = async () => {
+  const getConvs: ClientToServerEvents["message:getAllConvs"] = async (cb) => {
     const userID = socket.userID;
     const conversations = await getAllConvs(userID);
-    socket.emit("message:getAllConvs", conversations);
+    cb(conversations);
   };
 
   socket.on("message:direct", directMessage);

@@ -5,5 +5,5 @@ export interface INewUser {
 }
 
 export interface IUser extends INewUser {
-  id: number;
+  id: number,
 }
