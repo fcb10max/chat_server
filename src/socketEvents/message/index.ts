@@ -56,6 +56,7 @@ export const message = (io: SocketServerType, socket: SocketType) => {
   };
   const getConvs: ClientToServerEvents["message:getAllConvs"] = async (cb) => {
     const userID = socket.userID;
+    
     const conversations = await getAllConvs(userID);
     cb(conversations, "");
   };

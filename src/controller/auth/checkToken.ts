@@ -24,7 +24,7 @@ export const checkToken =  async (req: Request, res: Response) => {
     ) as JwtPayload;
     const { id, username } = (await getUsers({ id: user_id }))[0];
 
-    res.status(200).json({ success: true, user: { userID: id, username } });
+    res.status(200).json({ success: true, user: { id, username } });
   } catch (error) {
     console.log(error);
 

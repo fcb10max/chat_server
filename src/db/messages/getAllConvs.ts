@@ -4,6 +4,7 @@ import knex from "../connect";
 
 export const getAllConvs = async (self: number) => {
   const conversations: IConversation[] = [];
+  
   const messages = await knex("messages")
     .select<IMessageClient[]>([
       "message_id",
@@ -12,8 +13,8 @@ export const getAllConvs = async (self: number) => {
       "content",
       "created",
     ])
-    .where("from", self)
-    .orWhere("to", self);
+    .where("from", self ?? "")
+    .orWhere("to", self ?? "");
   const notSelfIds = messages.reduce((arr: number[], msg) => {
     const notSelfID = self === msg.from ? msg.to : msg.from;
     return arr.indexOf(notSelfID) > -1 ? arr : [...arr, notSelfID];

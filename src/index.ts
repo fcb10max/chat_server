@@ -46,12 +46,12 @@ const io = new Server<
 });
 
 io.use((socket, next) => {
-  const { username, userID } = socket.handshake.auth;
+  const { username, id } = socket.handshake.auth;
   if (!username) {
     return next(new Error("invalid username"));
   }
   socket.username = username;
-  socket.userID = userID;
+  socket.userID = id;
   next();
 });
 
