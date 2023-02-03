@@ -2,8 +2,7 @@ import { IConversation, IMessageClient } from "../../dataTypes/messages";
 import { IUser } from "../../dataTypes/user";
 import knex from "../connect";
 
-
-export default async (id: number) => {
+export const getAllConvs = async (self: number) => {
   const conversations: IConversation[] = [];
   const messages = await knex("messages")
     .select<IMessageClient[]>([
@@ -13,15 +12,15 @@ export default async (id: number) => {
       "content",
       "created",
     ])
-    .where("from", id)
-    .orWhere("to", id);
-  const otherPeopleIds = messages.reduce((arr: number[], msg) => {
-    const userID = id === msg.from ? msg.to : msg.from;
-    return arr.indexOf(userID) > -1 ? arr : [...arr, userID];
+    .where("from", self)
+    .orWhere("to", self);
+  const notSelfIds = messages.reduce((arr: number[], msg) => {
+    const notSelfID = self === msg.from ? msg.to : msg.from;
+    return arr.indexOf(notSelfID) > -1 ? arr : [...arr, notSelfID];
   }, []);
-  const users = await knex<IUser>("users")
+  const users = await knex<Pick<IUser, "id" | "username">>("users")
     .select(["id", "username"])
-    .whereIn("id", otherPeopleIds);
+    .whereIn("id", notSelfIds);
 
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
@@ -35,5 +34,5 @@ export default async (id: number) => {
     });
     conversations.push({ lastMsg: lastMessage, user: user });
   }
-  return conversations
+  return conversations;
 };

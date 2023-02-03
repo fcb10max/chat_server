@@ -6,7 +6,7 @@ interface IGetAllMessages {
   to: number;
 }
 
-const getAllMessages = async ({ from, to }: IGetAllMessages) => {
+export const getMessages = async ({ from, to }: IGetAllMessages) => {
   return await knex<IMessage>("messages")
     .select("*")
     .where("from", from ?? "")
@@ -14,5 +14,3 @@ const getAllMessages = async ({ from, to }: IGetAllMessages) => {
     .orWhere("from", to ?? "")
     .andWhere("to", from ?? "");
 };
-
-export default getAllMessages;

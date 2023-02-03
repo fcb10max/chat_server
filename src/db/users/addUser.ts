@@ -1,18 +1,18 @@
 import knex from "../connect";
 import bcrypt from "bcrypt";
-import { INewUser, IUser } from "../../dataTypes/user";
+import { IUser } from "../../dataTypes/user";
 
 interface IResult {
   error: boolean;
-  id: any;
+  userID: any;
   errMsg: string;
 }
 
-export default async (user: INewUser) => {
+export default async (user: Pick<IUser, "username" | "email" | "password">) => {
   const { username, email, password } = user;
   const result: IResult = {
     error: false,
-    id: "",
+    userID: "",
     errMsg: "",
   };
 
@@ -35,7 +35,7 @@ export default async (user: INewUser) => {
       result.errMsg = `Could not return id of new user: ${username}`;
       return result;
     }
-    result.id = ids[0].id;
+    result.userID = ids[0].id;
   } catch (error) {
     console.log(error);
     result.error = true;

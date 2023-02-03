@@ -1,7 +1,7 @@
 import { IUser } from "../dataTypes/user";
 import getUsers from "../db/users/getUsers";
 
-export default async (user: IUser) => {
+export default async (user: Pick<IUser, "email" | "username">) => {
   const { username, email } = user;
   let isValid = true;
   let errMsg = "";

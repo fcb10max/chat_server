@@ -1,16 +1,19 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import { IUser } from "../../dataTypes/user";
 import addUser from "../../db/users/addUser";
 import checkNewUserValidity from "../../helpers/checkNewUserValidity";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 
 dotenv.config();
 
-export default async (req: Request, res: Response) => {
-  const user: IUser = req.body;
-  const { isValid, errMsg } = await checkNewUserValidity(user);
-  
+export const register = async (req: Request, res: Response) => {
+  const user: Pick<IUser, "email" | "username" | "password"> = req.body;
+  const { isValid, errMsg } = await checkNewUserValidity({
+    email: user.email,
+    username: user.username,
+  });
+
   if (!isValid) {
     res.status(406).json({ success: false, msg: errMsg });
     return;
@@ -22,9 +25,11 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
-  const genToken = (id: any) =>
-    jwt.sign(id, process.env.JWT_SECRET_KEY!, { expiresIn: "12h" });
-  const token = genToken({ user_id: result.id });
+  const genToken = (id: number) =>
+    jwt.sign({ user_id: id }, process.env.JWT_SECRET_KEY!, {
+      expiresIn: "12h",
+    });
+  const token = genToken(result.userID);
 
   res.cookie("jwt", token, {
     maxAge: 1000 * 60 * 60 * 12,

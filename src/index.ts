@@ -56,16 +56,6 @@ io.use((socket, next) => {
 });
 
 const onConnection = (client: SocketType) => {
-  // const users = [];
-  // for (let [id, socket] of io.of("/").sockets) {
-  //   if (id === client.id) continue;
-  //   users.push({
-  //     userID: socket.userID,
-  //     username: socket.username,
-  //   });
-  // }
-  // client.emit("users", users);
-
   message(io, client);
   users(io, client);
 

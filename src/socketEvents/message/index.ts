@@ -1,16 +1,10 @@
 import {
-  IMessage,
-  IMessageClient,
-  INewMessage,
-} from "../../dataTypes/messages";
-import {
   ClientToServerEvents,
   SocketServerType,
   SocketType,
-} from "../../dataTypes/socket-io-types";
-import addNewMessage from "../../db/messages/addNewMessage";
-import getAllConvs from "../../db/messages/getAllConvs";
-import getMessages from "../../db/messages/getMessages";
+  INewMessage
+} from "../../dataTypes";
+import { addNewMessage, getAllConvs, getMessages } from "../../db/messages";
 
 interface IDirectMessage {
   msg: string;
@@ -32,7 +26,7 @@ export const message = (io: SocketServerType, socket: SocketType) => {
       to,
     };
     const newMsgID = await addNewMessage(msgObj);
-    // if (newMsgID < 0) // TODO: Error adding message
+    if (!newMsgID || newMsgID < 0) return cb({}, "Could not add message")
     const targetUser = Array.from(io.of("/").sockets.values()).find(
       (i) => i.userID === to
     );
@@ -50,7 +44,7 @@ export const message = (io: SocketServerType, socket: SocketType) => {
       from: msgObj.from,
       to: msgObj.to,
       message_id: newMsgID,
-    });
+    }, "");
   };
 
   const getAllMessages: ClientToServerEvents["message:getAll"] = async (
@@ -58,12 +52,12 @@ export const message = (io: SocketServerType, socket: SocketType) => {
     cb
   ) => {
     const messages = await getMessages({ from, to });
-    cb(messages.map(({ isArchived, ...others }) => ({ ...others })));
+    cb(messages.map(({ isArchived, ...others }) => ({ ...others })), "");
   };
   const getConvs: ClientToServerEvents["message:getAllConvs"] = async (cb) => {
     const userID = socket.userID;
     const conversations = await getAllConvs(userID);
-    cb(conversations);
+    cb(conversations, "");
   };
 
   socket.on("message:direct", directMessage);

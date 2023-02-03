@@ -1,9 +1,6 @@
-export interface INewUser {
+export interface IUser {
   username: string;
   password: string;
   email: string;
-}
-
-export interface IUser extends INewUser {
-  id: number,
+  id: number;
 }

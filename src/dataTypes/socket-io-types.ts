@@ -11,7 +11,6 @@ declare module "socket.io" {
 
 export interface ServerToClientEvents {
   "message:direct": (msgData: IMessageClient) => void;
-  // users: (users: { userID: number; username: string }[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -21,18 +20,21 @@ export interface ClientToServerEvents {
       from: number;
       to: number;
     },
-    callback: (msg: IMessageClient) => void
+    callback: (msg: IMessageClient | {}, error: string) => void
   ) => void;
   "message:getAll": (
     users: { from: number; to: number },
-    callback: (res: IMessageClient[]) => void
+    callback: (res: IMessageClient[] | {}, error: string) => void
   ) => void;
   "message:getAllConvs": (
-    callback: (conversations: IConversation[]) => void
+    callback: (conversations: IConversation[] | {}, error: string) => void
   ) => void;
   "users:getSuggestions": (
-    searchData: { username: string; },
-    callback: (suggs: Omit<IUser, "password"|"email">[]) => void
+    searchData: { username: string },
+    callback: (
+      suggs: Omit<IUser, "password" | "email">[] | {},
+      error: string
+    ) => void
   ) => void;
 }
 

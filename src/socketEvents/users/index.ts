@@ -15,7 +15,7 @@ export const users = (io: SocketServerType, socket: SocketType) => {
       username: user.username,
       id: user.id,
     }));
-    cb(users)
+    cb(users, "")
   };
 
   socket.on("users:getSuggestions", userSearchSuggestions);

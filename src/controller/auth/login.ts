@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export default async (req: Request, res: Response) => {
+export const login =  async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = (await getUsers({ username }))[0];
   if (!user) {
@@ -23,9 +23,9 @@ export default async (req: Request, res: Response) => {
     return;
   }
 
-  const genToken = (id: any) =>
-    jwt.sign(id, process.env.JWT_SECRET_KEY!, { expiresIn: "12h" });
-  const token = genToken({ user_id: user.id });
+  const genToken = (id: number) =>
+    jwt.sign({user_id: id}, process.env.JWT_SECRET_KEY!, { expiresIn: "12h" });
+  const token = genToken(user.id);
 
   res.cookie("jwt", token, {
     maxAge: 1000 * 60 * 60 * 12,

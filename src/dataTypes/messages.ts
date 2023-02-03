@@ -12,6 +12,6 @@ export type IMessageClient = Omit<IMessage, "isArchived">;
 export type INewMessage = Omit<IMessage, "message_id">;
 
 export interface IConversation {
-  user: Omit<IUser, "password" | "email">;
+  user: Pick<IUser, "id" | "username">;
   lastMsg: IMessageClient;
 }

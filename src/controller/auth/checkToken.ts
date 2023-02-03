@@ -9,7 +9,7 @@ interface JwtPayload {
   user_id: number;
 }
 
-export default async (req: Request, res: Response) => {
+export const checkToken =  async (req: Request, res: Response) => {
   const token: string = req.cookies.jwt;
 
   if (!token) {
