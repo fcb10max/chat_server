@@ -61,7 +61,13 @@ export const message = (io: SocketServerType, socket: SocketType) => {
     cb(conversations, "");
   };
 
+  const updateMsgStatus: ClientToServerEvents["message:updateStatus"] = (message_id, cb) => {
+    console.log(message_id);
+    cb("")
+  }
+
   socket.on("message:direct", directMessage);
   socket.on("message:getAll", getAllMessages);
   socket.on("message:getAllConvs", getConvs);
+  socket.on("message:updateStatus", updateMsgStatus);
 };

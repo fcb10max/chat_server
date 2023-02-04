@@ -12,7 +12,7 @@ import {
   SocketData,
 } from "./dataTypes/socket-io-types";
 import router from "./router";
-import { message, users } from "./socketEvents";
+import { handleConnectDisconnect, message, users } from "./socketEvents";
 
 dotenv.config();
 
@@ -56,12 +56,9 @@ io.use((socket, next) => {
 });
 
 const onConnection = (client: SocketType) => {
+  handleConnectDisconnect(io, client)
   message(io, client);
   users(io, client);
-
-  client.on("disconnect", (reason) => {
-    console.log("Disconnecting... Reason: ", reason);
-  });
 };
 
 io.on("connection", onConnection);
