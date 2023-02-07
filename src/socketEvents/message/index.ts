@@ -2,9 +2,10 @@ import {
   ClientToServerEvents,
   SocketServerType,
   SocketType,
-  INewMessage
+  INewMessage,
 } from "../../dataTypes";
 import { addNewMessage, getAllConvs, getMessages } from "../../db/messages";
+import { changeMsgStatus } from "../../db/messages/changeMsgStatus";
 
 interface IDirectMessage {
   msg: string;
@@ -24,27 +25,20 @@ export const message = (io: SocketServerType, socket: SocketType) => {
       isArchived: false,
       from,
       to,
+      isRead: false,
     };
     const newMsgID = await addNewMessage(msgObj);
-    if (!newMsgID || newMsgID < 0) return cb({}, "Could not add message")
+    if (!newMsgID || newMsgID < 0) return cb({}, "Could not add message");
     const targetUser = Array.from(io.of("/").sockets.values()).find(
       (i) => i.userID === to
     );
+    const msgToOthers = (() => {
+      const { isArchived, ...others } = msgObj;
+      return { ...others, message_id: newMsgID };
+    })();
     if (targetUser && targetUser.connected)
-      targetUser.emit("message:direct", {
-        content: msgObj.content,
-        created: msgObj.created,
-        from: msgObj.from,
-        to: msgObj.to,
-        message_id: newMsgID,
-      });
-    cb({
-      content: msgObj.content,
-      created: msgObj.created,
-      from: msgObj.from,
-      to: msgObj.to,
-      message_id: newMsgID,
-    }, "");
+      targetUser.emit("message:direct", msgToOthers);
+    cb(msgToOthers, "");
   };
 
   const getAllMessages: ClientToServerEvents["message:getAll"] = async (
@@ -52,19 +46,33 @@ export const message = (io: SocketServerType, socket: SocketType) => {
     cb
   ) => {
     const messages = await getMessages({ from, to });
-    cb(messages.map(({ isArchived, ...others }) => ({ ...others })), "");
+    cb(
+      messages.map(({ isArchived, ...others }) => ({ ...others })),
+      ""
+    );
   };
   const getConvs: ClientToServerEvents["message:getAllConvs"] = async (cb) => {
     const userID = socket.userID;
-    
+
     const conversations = await getAllConvs(userID);
     cb(conversations, "");
   };
 
-  const updateMsgStatus: ClientToServerEvents["message:updateStatus"] = (message_id, cb) => {
-    console.log(message_id);
-    cb("")
-  }
+  const updateMsgStatus: ClientToServerEvents["message:updateStatus"] = async (
+    message_ids,
+    cb
+  ) => {
+    const { error, success, from } = await changeMsgStatus({ message_ids });
+    if (success && from !== -1) {
+      io.sockets.sockets.forEach((user) => {
+        if (user.userID !== from) return;
+        user.emit("message:statusUpdate", message_ids);
+      });
+      cb(true, "");
+      return;
+    }
+    cb(false, error);
+  };
 
   socket.on("message:direct", directMessage);
   socket.on("message:getAll", getAllMessages);

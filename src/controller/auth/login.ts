@@ -32,6 +32,4 @@ export const login =  async (req: Request, res: Response) => {
     httpOnly: true,
   });
   res.status(200).json({ success: true });
-
-  console.log("success");
 };

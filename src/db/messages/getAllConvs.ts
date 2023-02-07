@@ -4,7 +4,7 @@ import knex from "../connect";
 
 export const getAllConvs = async (self: number) => {
   const conversations: IConversation[] = [];
-  
+
   const messages = await knex("messages")
     .select<IMessageClient[]>([
       "message_id",
@@ -33,7 +33,14 @@ export const getAllConvs = async (self: number) => {
       const currMsgTime = currMsg.created;
       return prevMsgTime > currMsgTime ? prevMsg : currMsg;
     });
-    conversations.push({ lastMsg: lastMessage, user: user });
+    const newMessagesCount = messagesWithUser.filter(
+      ({ from, isRead }) => from === user.id && !isRead
+    ).length;
+    conversations.push({
+      lastMsg: lastMessage,
+      user: user,
+      newMessagesCount,
+    });
   }
   return conversations;
 };

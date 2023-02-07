@@ -7,11 +7,15 @@ export interface IMessage {
   created: number;
   content: string;
   isArchived: boolean;
+  isRead: boolean
 }
-export type IMessageClient = Omit<IMessage, "isArchived">;
+export interface IMessageClient extends Omit<IMessage, "isArchived"> {
+  isRead: boolean;
+}
 export type INewMessage = Omit<IMessage, "message_id">;
 
 export interface IConversation {
   user: Pick<IUser, "id" | "username">;
   lastMsg: IMessageClient;
+  newMessagesCount: number;
 }

@@ -13,6 +13,7 @@ export interface ServerToClientEvents {
   "message:direct": (msgData: IMessageClient) => void;
   newOnlineUser: (user: number) => void;
   newOfflineUser: (user: number) => void;
+  "message:statusUpdate": (msg_ids: number[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -31,7 +32,7 @@ export interface ClientToServerEvents {
   "message:getAllConvs": (
     callback: (conversations: IConversation[] | {}, error: string) => void
   ) => void;
-  "message:updateStatus": (message_id: number, callback: (err:string) =>void) => void;
+  "message:updateStatus": (message_id: number[], callback: (success: boolean, err:string) =>void) => void;
   "users:getSuggestions": (
     searchData: { username: string },
     callback: (
