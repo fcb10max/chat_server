@@ -38,7 +38,7 @@ const io = new Server<
   SocketData
 >(httpServer, {
   cors: {
-    origin: "http://localhost:5000",
+    origin: process.env.CLIENT_URL ?? "http://localhost:5000",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -56,7 +56,7 @@ io.use((socket, next) => {
 });
 
 const onConnection = (client: SocketType) => {
-  handleConnectDisconnect(io, client)
+  handleConnectDisconnect(io, client);
   message(io, client);
   users(io, client);
 };
